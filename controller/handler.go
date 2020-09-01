@@ -79,8 +79,22 @@ func DetailHandle(c *gin.Context)  {
 		c.HTML(http.StatusInternalServerError, "views/500.html", nil)
 		return
 	}
+
+	//获取上下篇
+	nearArticles, err := service.GetNearArticle(articleId)
+	if err != nil || len(nearArticles) != 2 {
+		fmt.Printf("GetNearArticle failed, err is:%v\n", err)
+		c.HTML(http.StatusInternalServerError, "views/500.html", nil)
+		return
+	}
+
+	prevArticle := nearArticles[0]
+	nextArticle := nearArticles[1]
 	c.HTML(http.StatusOK, "views/detail.html", gin.H{
 		"detail":articleDetail,
 		"comment_list":commentList,
+		"prev":prevArticle,
+		"next":nextArticle,
 	})
 }
+

@@ -18,7 +18,7 @@ func InsertCategory(category *model.Category) (categoryId int64, err error) {
 
 
 //获取单个的文章分类
-func GetArticleById(id int64) (category *model.Category, err error) {
+func GetCategoryById(id int64) (category *model.Category, err error) {
 	category = &model.Category{}
 	sqlStr := "select id, category_name, category_no from category where id=?;"
 	err = DB.Get(category, sqlStr, id)

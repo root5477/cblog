@@ -95,3 +95,9 @@ func GetArticleDetailById(atricleId int64) (articleDetail *model.ArticleDetail, 
 	}
 	return
 }
+
+//获取上下一篇文章
+func GetNearArticle(atricleId int64) (nearArticles []*model.ArticleInfo, err error) {
+	nearArticles, err = db.GetNearArticleFromDb(atricleId)
+	return
+}

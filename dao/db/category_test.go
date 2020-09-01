@@ -12,7 +12,7 @@ func init() {
 }
 
 func TestGetArticleById(t *testing.T) {
-	res, err := GetArticleById(2)
+	res, err := GetCategoryById(2)
 	if err != nil {
 		t.Errorf("GetArticleById failed, err is:%v\n", err)
 	} else {

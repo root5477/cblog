@@ -82,3 +82,85 @@ func GetArticlesByCategoryId(categoryId int64, pageNum, pageSize int) (articleLi
 	}
 	return
 }
+
+//获取上下一篇文章
+func GetNearArticleFromDb(atricleId int64) (nearArticles []*model.ArticleInfo, err error) {
+	if atricleId < 0 {
+		return
+	}
+	articleFirst := &model.ArticleInfo{}
+	sqlStr1 :=  `select
+					id, category_id, summary, title, view_count, create_time, comment_count, username
+				from article
+				where status=1
+				order by id limit 1;`
+
+	err = DB.Get(articleFirst, sqlStr1)
+	if err != nil {
+		return
+	}
+
+	articleNow := &model.ArticleInfo{}
+	sqlStrNow :=  `select
+					id, category_id, summary, title, view_count, create_time, comment_count, username
+				from article
+				where status=1
+				and id=?;`
+
+	err = DB.Get(articleNow, sqlStrNow, atricleId)
+	if err != nil {
+		return
+	}
+
+	articleEnd := &model.ArticleInfo{}
+	sqlStr2 :=   `select
+					id, category_id, summary, title, view_count, create_time, comment_count, username
+				from article
+				where status=1
+				order by id desc limit 1;`
+	err = DB.Get(articleEnd, sqlStr2)
+	if err != nil {
+		return
+	}
+
+	articlePre := &model.ArticleInfo{}
+	articleNext := &model.ArticleInfo{}
+	//如果当前文章为第一篇，则没有上一篇文章
+	if articleFirst.Id == atricleId {
+		articlePre = articleFirst
+		articlePre.Id = -1
+	} else {
+		sqlStrPre :=  `select
+					id, category_id, summary, title, view_count, create_time, comment_count, username
+				from article
+				where status=1
+				and id<? order by id desc limit 1;`
+
+		err = DB.Get(articlePre, sqlStrPre, atricleId)
+		if err != nil {
+			return
+		}
+	}
+
+	if articleEnd.Id == articleFirst.Id || articleEnd.Id == articleNow.Id {
+		articleNext = articleNow
+		articleNext.Id = -1
+	} else {
+		sqlStrNext :=  `select
+					id, category_id, summary, title, view_count, create_time, comment_count, username
+				from article
+				where status=1
+				and id>? limit 1;`
+
+		err = DB.Get(articleNext, sqlStrNext, atricleId)
+		if err != nil {
+			return
+		}
+	}
+	nearArticles = append(nearArticles, articlePre, articleNext)
+	return
+}
+
+func GetAllArticleId()  {
+	
+}

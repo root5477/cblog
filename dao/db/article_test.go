@@ -1,6 +1,7 @@
 package db
 
 import (
+	"fmt"
 	"goStudy/blog/model"
 	"testing"
 	"time"
@@ -55,6 +56,16 @@ func TestGetArticleDetail(t *testing.T) {
 	} else {
 		t.Logf("articles:%v", articles)
 	}
+}
 
+func TestGetNearArticleFromDb(t *testing.T) {
+	res, err := GetNearArticleFromDb(2)
+	if err != nil {
+		t.Errorf("GetNearArticleFromDb err:%v", err)
+	} else {
+		t.Logf("GetNearArticleFromDb resp:%v", res)
+		fmt.Println(*res[0])
+		fmt.Println(*res[1])
+	}
 }
 
