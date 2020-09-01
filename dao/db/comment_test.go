@@ -1,7 +1,9 @@
 package db
 
 import (
+	"goStudy/blog/model"
 	"testing"
+	"time"
 )
 
 func init()  {
@@ -17,5 +19,22 @@ func TestGetCommentListByArticleId(t *testing.T) {
 		t.Errorf("GetCommentListByArticleId failed, err:%v", err)
 	} else {
 		t.Logf("commentList:%v", *commentList[0])
+	}
+}
+
+func TestAddComment(t *testing.T) {
+	comment := &model.Comment {
+		Id:4,
+		Content:"大神666777",
+		UserName:"cq2",
+		Status:1,
+		ArticleId:8,
+		CreateTime:time.Now(),
+	}
+	commentId, err := AddComment(comment)
+	if err != nil {
+		t.Errorf("AddComment failed, err is:%v", err)
+	} else {
+		t.Logf("AddComment success, commentId:%v", commentId)
 	}
 }
