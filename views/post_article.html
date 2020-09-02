@@ -40,7 +40,7 @@
 		<div style="margin:auto;width:80%;align:center;">
 				<label for="author" style="margin:0px 0px 0px 0px;line-height:40px;">文章分类 <span class="required">*</span></label>
 				<select name="category_id">
-					{{range .}} 
+					{{range .category_list}}
 						<option value="{{.CategoryId}}">{{.CategoryName}}</option>
 					{{end}}					
 				</select>
@@ -61,6 +61,7 @@
                         }
                     } )
 				.then( editor => {
+                    console.log( "233333" );
 					console.log( editor );
 				} )
 				.catch( error => {

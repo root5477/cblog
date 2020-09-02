@@ -9,3 +9,11 @@ func GetCommentListByArticleId(articleId int64) (commentList []*model.Comment, e
 	commentList, err = db.GetCommentListByArticleId(articleId)
 	return
 }
+
+func CreateComment(comment *model.Comment) (commentId int64, err error) {
+	commentId, err = db.AddComment(comment)
+	if err != nil {
+		return
+	}
+	return
+}

@@ -21,5 +21,10 @@ func main()  {
 	router.GET("/", controller.IndexHandle)
 	router.GET("/category/", controller.Categorylist)
 	router.GET("/article/detail/", controller.DetailHandle)
+	router.GET("/article/new/", controller.NewArticleHandler)
+
+	router.POST("/comment/submit/", controller.CommentAddHandler)
+	router.POST("/article/submit/", controller.ArticleSubmitHandler)
+
 	router.Run(":8000")
 }

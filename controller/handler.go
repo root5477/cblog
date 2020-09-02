@@ -3,9 +3,11 @@ package controller
 import (
 	"fmt"
 	"github.com/gin-gonic/gin"
+	"goStudy/blog/model"
 	"goStudy/blog/service"
 	"net/http"
 	"strconv"
+	"time"
 )
 
 //访问主页的控制器
@@ -23,15 +25,15 @@ func IndexHandle(c *gin.Context) {
 		c.HTML(http.StatusInternalServerError, "views/500.html", nil)
 		return
 	}
-	c.HTML(http.StatusOK, "views/index.html", gin.H {
+	c.HTML(http.StatusOK, "views/index.html", gin.H{
 		//gin.H本质上一个map
-		"article_list":articleList,
-		"category_list":categoryList,
+		"article_list":  articleList,
+		"category_list": categoryList,
 	})
 }
 
 //点击分类云进行分类
-func Categorylist(c *gin.Context)  {
+func Categorylist(c *gin.Context) {
 	categoryIdStr := c.Query("category_id")
 	//转换类型
 	cateforyId, err := strconv.ParseInt(categoryIdStr, 10, 64)
@@ -53,13 +55,13 @@ func Categorylist(c *gin.Context)  {
 	}
 	fmt.Println("articleRecords:", articleRecords)
 	c.HTML(http.StatusOK, "views/index.html", gin.H{
-		"article_list":articleRecords,
-		"category_list":categoryList,
+		"article_list":  articleRecords,
+		"category_list": categoryList,
 	})
 }
 
 //点击首页文章标题，进入文章详情页
-func DetailHandle(c *gin.Context)  {
+func DetailHandle(c *gin.Context) {
 	articleIdStr := c.Query("article_id")
 	articleId, err := strconv.ParseInt(articleIdStr, 10, 64)
 	if err != nil {
@@ -91,10 +93,94 @@ func DetailHandle(c *gin.Context)  {
 	prevArticle := nearArticles[0]
 	nextArticle := nearArticles[1]
 	c.HTML(http.StatusOK, "views/detail.html", gin.H{
-		"detail":articleDetail,
-		"comment_list":commentList,
-		"prev":prevArticle,
-		"next":nextArticle,
+		"detail":       articleDetail,
+		"comment_list": commentList,
+		"prev":         prevArticle,
+		"next":         nextArticle,
 	})
 }
 
+func NewArticleHandler(c *gin.Context) {
+	categoryList, err := service.GetAllCategoryList()
+	if err != nil {
+		c.HTML(http.StatusInternalServerError, "views/500.html", nil)
+		return
+	}
+	c.HTML(http.StatusOK, "views/post_article.html", gin.H{
+		"category_list": categoryList,
+	})
+	return
+}
+
+type AddArticleReq struct {
+	Author     string `json:"author"`
+	Title      string `json:"title"`
+	CategoryId string `json:"category_id"`
+	Content    string `json:"content"`
+}
+
+func ArticleSubmitHandler(c *gin.Context) {
+	addreq := &AddArticleReq{}
+	//author := c.Query("author")
+	//title := c.Query("title")
+	//categoryIdStr := c.Query("category_id")
+	//content := c.Query("content")
+	err := c.ShouldBindJSON(addreq)
+	if err != nil {
+		fmt.Println("0000000")
+		c.HTML(http.StatusInternalServerError, "views/500.html", nil)
+		return	}
+	fmt.Println("categoryIdStr:", addreq.CategoryId)
+	//转换类型
+	categoryId, err := strconv.ParseInt(addreq.CategoryId, 10, 64)
+	if err != nil {
+		fmt.Println("1111111")
+		c.HTML(http.StatusInternalServerError, "views/500.html", nil)
+		return
+	}
+	articleInfo := model.ArticleInfo{
+		Title:      addreq.Title,
+		CreateTime: time.Now(),
+		UserName:   addreq.Author,
+	}
+	articleDetail := &model.ArticleDetail{
+		ArticleInfo: articleInfo,
+		Content:     addreq.Content,
+		Category: model.Category{
+			CategoryId: categoryId,
+		},
+	}
+	articleId, err := service.CreateArticle(articleDetail)
+	if err != nil {
+		fmt.Println("2222222")
+		c.HTML(http.StatusInternalServerError, "views/500.html", nil)
+		return
+	}
+	fmt.Println("create article success, articleId:", articleId)
+	c.HTML(http.StatusOK, "/", nil)
+	return
+}
+
+func CommentAddHandler(c *gin.Context) {
+	commentStr := c.Query("comment")
+	author := c.Query("author")
+	articleIdStr := c.Query("article_id")
+	articleId, err := strconv.ParseInt(articleIdStr, 10, 64)
+	if err != nil {
+		c.HTML(http.StatusInternalServerError, "views/500.html", nil)
+		return
+	}
+	comment := &model.Comment{
+		Id:         4,
+		Content:    commentStr,
+		UserName:   author,
+		Status:     1,
+		ArticleId:  articleId,
+		CreateTime: time.Now(),
+	}
+	_, err = service.CreateComment(comment)
+	if err != nil {
+		c.HTML(http.StatusInternalServerError, "views/500.html", nil)
+		return
+	}
+}

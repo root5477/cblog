@@ -101,3 +101,9 @@ func GetNearArticle(atricleId int64) (nearArticles []*model.ArticleInfo, err err
 	nearArticles, err = db.GetNearArticleFromDb(atricleId)
 	return
 }
+
+//创建文章
+func CreateArticle(article *model.ArticleDetail) (articleId int64, err error) {
+	articleId, err = db.InsertArticle(article)
+	return
+}

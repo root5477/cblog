@@ -26,7 +26,6 @@ func TestInsertArticle(t *testing.T) {
 	}
 
 
-
 	article := &model.ArticleDetail{
 		ArticleInfo:articleInfo,
 		Content:"balabalabalabalabalabalabalabalabalabalabalabalabalabalabalabala",
