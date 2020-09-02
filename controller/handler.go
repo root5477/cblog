@@ -120,32 +120,29 @@ type AddArticleReq struct {
 }
 
 func ArticleSubmitHandler(c *gin.Context) {
-	addreq := &AddArticleReq{}
-	//author := c.Query("author")
-	//title := c.Query("title")
-	//categoryIdStr := c.Query("category_id")
-	//content := c.Query("content")
-	err := c.ShouldBindJSON(addreq)
-	if err != nil {
-		fmt.Println("0000000")
-		c.HTML(http.StatusInternalServerError, "views/500.html", nil)
-		return	}
-	fmt.Println("categoryIdStr:", addreq.CategoryId)
+	author := c.Query("author")
+	title := c.Query("title")
+	categoryIdStr := c.Query("category_id")
+	content := c.Query("content")
+	fmt.Println("author:", author)
+	fmt.Println("title:", title)
+	fmt.Println("categoryIdStr:", categoryIdStr)
 	//转换类型
-	categoryId, err := strconv.ParseInt(addreq.CategoryId, 10, 64)
+	categoryId, err := strconv.ParseInt(categoryIdStr, 10, 64)
 	if err != nil {
 		fmt.Println("1111111")
 		c.HTML(http.StatusInternalServerError, "views/500.html", nil)
 		return
 	}
+
 	articleInfo := model.ArticleInfo{
-		Title:      addreq.Title,
+		Title:      title,
 		CreateTime: time.Now(),
-		UserName:   addreq.Author,
+		UserName:   author,
 	}
 	articleDetail := &model.ArticleDetail{
 		ArticleInfo: articleInfo,
-		Content:     addreq.Content,
+		Content:     content,
 		Category: model.Category{
 			CategoryId: categoryId,
 		},
